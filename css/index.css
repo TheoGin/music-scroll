@@ -1,0 +1,45 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #000;
+    color: #666;
+    /* 行和元素才会居中 */
+    text-align: center;
+}
+
+audio {
+    width: 450px;
+    margin: 30px 0;
+}
+
+.container {
+    height: 420px;
+    border: 2px solid #fff;
+    overflow: hidden;
+}
+
+.lrc-list {
+    /* border: 2px solid red; */
+    /* transform: translateY(-364px);移动要比margin-top：-364px; 效率高，因为不会引发reflow */
+    transform: translateY(-12px);
+    /* 过渡transition只对数值类CSS有效 */
+    transition: .2s;
+    list-style: none;
+}
+
+.lrc-list li {
+    height: 30px;
+    /* border: 2px solid #fff; */
+    line-height: 30px;
+    /* 要加在li，不然当没有.active，过渡就没了 */
+    transition: .2s; 
+}
+
+.lrc-list li.active {
+    color: #fff;
+    /* transform: scale(1.2);放大字体要比font-size: 1.2rem; 效率高 */
+    transform: scale(1.2);
+}
