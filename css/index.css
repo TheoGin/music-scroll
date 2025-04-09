@@ -17,16 +17,16 @@ audio {
 
 .container {
     height: 420px;
-    border: 2px solid #fff;
+    /* border: 2px solid #fff; */
     overflow: hidden;
 }
 
 .lrc-list {
     /* border: 2px solid red; */
     /* transform: translateY(-364px);移动要比margin-top：-364px; 效率高，因为不会引发reflow */
-    transform: translateY(-12px);
+    /* transform: translateY(-12px); */
     /* 过渡transition只对数值类CSS有效 */
-    transition: .2s;
+    transition: .6s;
     list-style: none;
 }
 
