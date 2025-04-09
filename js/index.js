@@ -1,21 +1,15 @@
 /**
- * 将'[03:52.20'转为秒
- * @param {string} time 接收'[03:52.20'
+ * 解析歌词字符串
+ * 得到一个歌词对象的数组
+ * 每个歌词对象：
+ * {time:开始时间, words: 歌词内容}
  */
-function parseTimeToSecond(time) {
-  var parts = time.split(":");
-  return +parts[0].substring(1) * 60 + +parts[1];
-}
-
-/**
- * 将歌词字符串转为对象数组
- * @param {string} str 接收歌词字符串参数
- */
-function parseSongStr(str) {
-  var songArr = str.split("\n");
-  var results = [];
-  for (var i = 0; i < songArr.length; i++) {
-    var partArr = songArr[i].split("]");
+function parseSongStr() {
+  // lrc在前面引入，所以不需要作为参数传递
+  var lines = lrc.split("\n");
+  var results = []; // 歌词对象数组
+  for (var i = 0; i < lines.length; i++) {
+    var partArr = lines[i].split("]");
     var obj = {
       time: parseTimeToSecond(partArr[0]),
       words: partArr[1],
@@ -25,9 +19,18 @@ function parseSongStr(str) {
   return results;
 }
 
-var lrcData = parseSongStr(lrc);
-// console.log(lrcData);
+/**
+ * 将一个时间字符串'[03:52.20'解析为数字（秒）
+ * @param {String} timeStr 接收'[03:52.20'
+ */
+function parseTimeToSecond(timeStr) {
+  var parts = timeStr.split(":");
+  return +parts[0].substring(1) * 60 + +parts[1];
+}
 
+var lrcData = parseSongStr();
+
+// 获取需要的 dom
 var doms = {
   audio: document.querySelector("audio"),
   ul: document.querySelector(".container ul"),
@@ -37,16 +40,17 @@ var doms = {
 /**
  * 找到当前audio时间对应lrcData的下标
  * @returns lrcData数组的下标
- * 考虑边界问题：-1表示当前时间为0；超出部分显示最后一行歌词lrcData.length - 1
+ * 考虑边界问题：如果没有任何一句歌词需要显示，则得到-1; 超出部分显示最后一行歌词lrcData.length - 1
  */
 function findIndex() {
+  // 播放器当前时间
   var curTime = doms.audio.currentTime;
   for (var i = 0; i < lrcData.length; i++) {
     if (lrcData[i].time > curTime) {
       return i - 1;
     }
   }
-  // 超出部分显示最后一行歌词
+  // 找遍了都没找到（说明播放到最后一句），超出部分显示最后一行歌词
   return lrcData.length - 1;
 }
 
@@ -57,27 +61,34 @@ function findIndex() {
 //     doms.ul.appendChild(li) // 每加一个元素会导致reflow ---> 用document.createDocumentFragment()文档碎片
 //   }
 // }
+
+// 界面
+
 /**
+ * 创建歌词元素 li
  * 根据lrcData数组创建每一个li元素，并用 文档碎片 来优化
  * 避免每加一个元素会导致reflow
  */
 function createLrcElements() {
-  var frament = document.createDocumentFragment();
+  var fragment = document.createDocumentFragment();// 文档片段
   for (var i = 0; i < lrcData.length; i++) {
     var li = document.createElement("li");
     li.textContent = lrcData[i].words;
-    frament.appendChild(li); // 每加一个元素会导致reflow
+    fragment.appendChild(li); // 每加一个元素会导致reflow
   }
-  doms.ul.appendChild(frament);
+  doms.ul.appendChild(fragment);
 }
 createLrcElements();
 
+// 容器高度
 var containerHeight = doms.container.clientHeight;
+// 每个 li 的高度
 var liHeight = doms.ul.children[0].clientHeight;
+// 最大偏移量
 var maxOffset = doms.ul.clientHeight - containerHeight;
 
 /**
- * ul距离容器div的偏移量
+ * 设置 ul 元素距离容器div的偏移量
  */
 function setOffset() {
   var index = findIndex();
@@ -107,5 +118,5 @@ function setOffset() {
   //   console.log(offset);
 }
 
-
-doms.audio.addEventListener('timeupdate', setOffset);
+// audio时间一遍，就会触发setOffset回调
+doms.audio.addEventListener("timeupdate", setOffset);
