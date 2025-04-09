@@ -24,7 +24,7 @@ audio {
 .lrc-list {
     /* border: 2px solid red; */
     /* transform: translateY(-364px);移动要比margin-top：-364px; 效率高，因为不会引发reflow */
-    /* transform: translateY(-12px); */
+    /* transform: translateY(-12px); */ /* 通过js设置 */
     /* 过渡transition只对数值类CSS有效 */
     transition: .6s;
     list-style: none;
@@ -38,7 +38,7 @@ audio {
     transition: .2s; 
 }
 
-.lrc-list li.active {
+.lrc-list li.active { /* 通过js添加类名 */
     color: #fff;
     /* transform: scale(1.2);放大字体要比font-size: 1.2rem; 效率高 */
     transform: scale(1.2);
